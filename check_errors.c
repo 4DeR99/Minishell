@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/17 15:13:52 by moulmado          #+#    #+#             */
-/*   Updated: 2022/05/24 11:04:47 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/06 00:18:21 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	loop_4_quotes(char *input, int *double_q, int *single_q)
 {
-	int index;
+	int	index;
 
 	index = 0;
 	while (input[index])
@@ -45,12 +45,14 @@ static int	parenthesses_error(int prentheses)
 {
 	if (prentheses > 0)
 	{
-		error_msg("expected this \")\" to match this \"(\"\n");
+		ft_putstr_fd("Minishell: syntax error: ", 2);
+		ft_putstr_fd("expected this \")\" to match this \"(\"\n", 2);
 		return (1);
 	}
 	if (prentheses < 0)
 	{
-		error_msg("expected this \"(\" before this \")\"\n");
+		ft_putstr_fd("Minishell: syntax error: ", 2);
+		ft_putstr_fd("expected this \"(\" before this \")\"\n", 2);
 		return (1);
 	}
 	return (0);

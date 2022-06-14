@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   here_doc_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smazouz <smazouz@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/05 18:47:44 by smazouz           #+#    #+#             */
+/*   Updated: 2022/06/08 15:38:33 by smazouz          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include"minishell.h"
 
 static char	*rest_of_line(char *line)
@@ -27,33 +39,33 @@ static char	*rest_of_line(char *line)
 	return (free(line), rest);
 }
 
-static char	*ft_make_new_line(char *line, char *var, int size, int dollar_number)
+static char	*ft_make_new_line(char *line, char *var, int size, int d_r)
 {
-	int		var_len;
-	int		var_len_;
+	int		v_l;
+	int		v_l_;
 	int		new_var;
-	char	*new_line;
-	char	*v_name;
+	char	*n_l;
+	char	*v_n;
 
-	v_name = var_name(line);
+	v_n = var_name(line);
 	new_var = -1;
-	var_len = -1;
-	var_len_ = 0;
-	new_line = malloc(size + 2);
-	if (!new_line)
+	v_l = -1;
+	v_l_ = 0;
+	n_l = malloc(size + 2);
+	if (!n_l)
 		return (NULL);
-	while (line[++var_len])
+	while (line[++v_l])
 	{
-		if (line[var_len_] == '$' && dollar_number == 0)
+		if (line[v_l_] == '$' && d_r == 0)
 		{
-			dollar_number++;
+			d_r++;
 			while (var[++new_var])
-				new_line[var_len_++] = var[new_var];
-			var_len += (ft_strlen(v_name) + 1);
+				n_l[v_l_++] = var[new_var];
+			v_l += (ft_strlen(v_n) + 1);
 		}
-		new_line[var_len_++] = line[var_len];
+		n_l[v_l_++] = line[v_l];
 	}
-	return (free(line), free(v_name), new_line[var_len_ - 1] = '\n', new_line[var_len_] = '\0', new_line);
+	return (free(line), free(v_n), n_l[v_l_ - 1] = '\n', n_l[v_l_] = '\0', n_l);
 }
 
 static char	*up_line(char *line)

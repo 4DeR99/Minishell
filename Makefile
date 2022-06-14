@@ -6,7 +6,7 @@
 #    By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/03 12:27:57 by moulmado          #+#    #+#              #
-#    Updated: 2022/06/04 13:28:49 by moulmado         ###   ########.fr        #
+#    Updated: 2022/06/09 08:56:10 by moulmado         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,9 @@ SRC = utils.c parser.c check_errors.c postfix_expression.c lstedit/stacklst/ft_s
 		here_doc_utils_1.c ft_putstr_fd.c ft_alpha_numeric.c execution_utils.c rm_rf_spaces.c \
 		lstedit/envlst/envadd_back.c lstedit/envlst/envlast.c lstedit/envlst/envnew.c lstedit/envlst/envsize.c \
 		builtins/pwd.c builtins/env.c builtins/cd.c builtins/export.c builtins/echo.c builtins/unset.c \
-		syntax_check.c rm_rf_quotes.c split_cmd_nd_args.c rm_rf_quotes_.c leaks?.c
+		builtins/exit.c syntax_check.c rm_rf_quotes.c split_cmd_nd_args.c rm_rf_quotes_.c leaks?.c \
+		execution_wildcards.c cmd_path_utils.c free_all.c execute_builtins.c rm_rf_quotes__.c \
+		postfix_expression_.c tree_fnc.c ft_itoa.c
 # SRC = $(shell ls *.c)
 OBJ = $(SRC:.c=.o)
 CC = cc

@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/18 09:28:25 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/01 20:57:00 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/09 08:35:22 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static char	*cleanse(char *str)
 	while (start <= end)
 		re[index++] = str[start++];
 	re[index] = '\0';
-	// free(str);
+	free(str);
 	return (re);
 }
 

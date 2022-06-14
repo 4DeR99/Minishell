@@ -1,126 +1,60 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/05 16:56:51 by smazouz           #+#    #+#             */
+/*   Updated: 2022/06/09 09:10:24 by moulmado         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void ft_lst_file(char *path ,t_stack **list, int *index)
+static int	ft_cmd_error(char *name)
 {
-	DIR                *dirp;
-	struct dirent    *item;
-	char *new_path;
-	new_path = NULL;
-	t_stack *node = (*list);
-	dirp = opendir(path);
-	item = readdir(dirp);
-	while (item)
-	{
-		if(strcmp(item->d_name,".") != 0 && strcmp(item->d_name,"..") != 0)
-		{
-			ft_stackadd_back(&node,ft_stacknew(item->d_name,0));
-			(*index)++;
-		}
-		item = readdir(dirp);
-	}
-	closedir(dirp);
+	ft_putstr_fd("Minishell: ", 2);
+	ft_putstr_fd(name, 2);
+	ft_putstr_fd(": command not found\n", 2);
+	exit (2);
 }
 
-char **make_lst_file(char *cmd)
+static void	set_status(void)
 {
-	t_stack *node;
-	int index = 1;
-	char **str;
-
-	node = ft_stacknew(cmd, 0);
-	ft_lst_file(".", &node, &index);
-	str = (char **)malloc(sizeof(char *) * index);
-	index = 0;
-	while (node)
-	{
-		str[index] = node->op;
-		node = node->next;
-		index++;
-	}
-	str[index] = NULL;
-	return (str);
-}
-
-int	check_for_wildcards(char **flags)
-{
-	int	index;
-
-	index = 0;
-	while (flags[index])
-	{
-		if (ft_strcmp(flags[index], "*") == 0)
-			return (index);
-		index++;
-	}
-	return (0);
-}
-
-char	**up_flag(char **flags, char *cmd)
-{
-	int		flags_len;
-	int		dir_len;
-	char	**new_flags = NULL;
-	char	**current_dir;
-
-	(void)cmd;
-	current_dir = make_lst_file(cmd);
-	dir_len = 0;
-	while (current_dir[dir_len])
-		dir_len++;
-	flags_len = 0;
-	while (flags[flags_len])
-		flags_len++;
-	new_flags = (char **)malloc(sizeof(char *) * (flags_len + dir_len));
-	flags_len = 0;
-	int i = 0;
-	while (flags[flags_len])
-	{
-		if (ft_strcmp(flags[flags_len], "*") == 0)
-		{
-			for (int j =0; j < dir_len;j++)
-			{
-				new_flags[i] = current_dir[j];
-				i++;
-			}
-		}
-		else
-		{
-			new_flags[i] = flags[flags_len];
-			i++;
-		}
-		flags_len++;
-	}
-	new_flags[i] = NULL;
-	return (new_flags);
+	if (g_glob.status == 512)
+		g_glob.status = 127;
+	if (g_glob.status == 256)
+		g_glob.status = 1;
 }
 
 int	exec_cmd(t_tree *tree, int ou, int in)
 {
-	int	pid = fork();
+	int	pid;
 	int	index;
 
-	set_env();
+	pid = fork();
 	if (pid == 0)
 	{
+		signal(SIGKILL, SIG_DFL);
 		dup2(ou, 1);
 		if (ou != 1)
 			close(ou);
 		dup2(in, 0);
 		if (in != 0)
 			close(in);
-		if ((index = check_for_wildcards(tree->cmd->args)) != 0)
-			tree->cmd->args = up_flag(tree->cmd->args, tree->cmd->path);
-		if (execve(tree->cmd->path, tree->cmd->args, g_glob.env_tab) == -1)
+		index = check_for_wildcards(tree->cmd->args);
+		while (index)
 		{
-			ft_putstr_fd("Minishell: ", 2);
-			ft_putstr_fd(tree->cmd->args[0], 2);
-			ft_putstr_fd(": command not found\n", 2);
-			g_glob.status = 127;
-			return (3);
+			tree->cmd->args = up_flag(tree->cmd->args, tree->cmd->path);
+			index = check_for_wildcards(tree->cmd->args);
 		}
+		if (execve(tree->cmd->path, tree->cmd->args, g_glob.env_tab) == -1)
+			return (ft_cmd_error(tree->cmd->args[0]));
 	}
-	waitpid(pid, 0, 0);
-	return (0);
+	waitpid(pid, &g_glob.status, 0);
+	set_status();
+	return (g_glob.status);
 }
 
 void	run_pipe(t_tree *tree, int ou, int in)
@@ -150,10 +84,8 @@ void	run_pipe(t_tree *tree, int ou, int in)
 	waitpid(-1, 0, 0);
 }
 
-int ft_execution(t_tree *tree, int ou, int in)
+int	ft_execution(t_tree *tree, int ou, int in)
 {
-	if (!tree)
-		exit(5);
 	if (tree->op != NULL)
 	{
 		if (ft_strcmp(tree->op, "&&") == 0 || ft_strcmp(tree->op, "||") == 0)
@@ -161,19 +93,22 @@ int ft_execution(t_tree *tree, int ou, int in)
 		else if (ft_strcmp(tree->op, "|") == 0)
 			run_pipe(tree, ou, in);
 		else if (ft_strcmp(tree->op, ">") == 0)
-			run_redirect_output(tree ,in);
+			run_redirect_output(tree, in);
 		else if (ft_strcmp(tree->op, ">>") == 0)
 			run_redirect_output_append(tree, in);
 		else if (ft_strcmp(tree->op, "<") == 0)
-			run_redirect_input(tree, ou, in);
+			run_redirect_input(tree, ou);
 		else if (ft_strcmp(tree->op, "<<") == 0)
 			run_here_doc(tree, ou);
 	}
 	else
 	{
 		tree->cmd->args = split_cmd_nd_args(tree->cmd->name);
-		if (exec_cmd(tree, ou, in) == 3)
-			return (3);
+		tree->cmd->path = cmd_path(tree->cmd->args[0]);
+		if (execute_builtins(tree->cmd->args, ou))
+			return (g_glob.exc_status = 0, 0);
+		else if (exec_cmd(tree, ou, in) == 0)
+			return (g_glob.exc_status = 0, 0);
 	}
 	return (1);
 }

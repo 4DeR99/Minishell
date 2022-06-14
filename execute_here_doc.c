@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/23 04:01:21 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/04 14:34:20 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/09 08:46:00 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,24 @@
 static void	replace_del(t_tree *tree)
 {
 	int	p[2];
+	int	pid;
 
 	pipe(p);
-	read_from_here_doc(p[1], tree->cmd->name);
-	tree->cmd = NULL;
-	tree->fd = p[0];
-	close(p[1]);
+	pid = fork();
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		close(p[0]);
+		read_from_here_doc(p[1], tree->cmd->name);
+		close(p[1]);
+		exit(0);
+	}
+	else
+	{
+		waitpid(pid, 0, 0);
+		tree->fd = p[0];
+		close(p[1]);
+	}
 }
 
 void	here_doc_execute(t_tree *tree)
@@ -34,7 +46,9 @@ void	here_doc_execute(t_tree *tree)
 	{
 		if (ft_strcmp(tree->op, "<<") == 0 && tree->op)
 		{
+			g_glob.exc_status = 2;
 			replace_del(tree->branch2);
+			g_glob.exc_status = 0;
 		}
 		else if (tree->branch2)
 		{

@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/12 14:58:57 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/04 13:26:04 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/09 08:55:30 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_glob
 	char	*home;
 	char	**env_tab;
 	t_env	*env;
+	int		exc_status;
 }				t_glob;
 
 typedef struct s_stack
@@ -62,6 +63,8 @@ typedef struct s_int
 {
 	int	len;
 	int	tmp;
+	int	yes;
+	int	prio;
 }				t_int;
 typedef struct s_tab
 {
@@ -88,17 +91,16 @@ typedef struct s_tree
 	int				branch_type;
 }				t_tree;
 
-t_glob g_glob;
+t_glob			g_glob;
 extern t_glob	g_glob;
 
 //utils
 char	*ft_strjoin(char *s0, char *s1);
+char	*join_ndfree(char *s0, char *s1);
 char	*join_2(char *s0, char *s1);
 int		slen(char *c);
 int		ft_strchr(char *str, int c);
 char	*ft_strdup(char *s);
-void	error_msg(char *error);
-void	color(int c_nb);
 int		ft_strncmp(char *s1, char *s2, int n);
 int		lst_size(char **lst);
 size_t	ft_strlen(const char *str);
@@ -108,6 +110,8 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 int		is_alpha_n(char c);
 void	set_env(void);
+int		ft_atoi(const char *s);
+char	*ft_itoa(int nbr);
 
 //4 parce
 t_tree	*parser(char *input);
@@ -115,13 +119,18 @@ int		check_syntax(char *input);
 int		check_4_parentheses(char *input);
 int		check_4_quotes(char *input);
 char	*postfix_expression(char *line);
+char	*postfix_handl(char *line, char *poxfix,
+			t_stack **stack, t_int *ints);
+char	*get_op_nd_cmd(char *line, t_stack **stack, t_int *ints, int yes);
 void	tree_expansion(t_tree *tree, char **lst);
 t_tree	*tree_of_life(char **lst);
+void	edit_start_point(char **lst, int *size, t_tab *tab);
 void	rm_rf_spaces(t_tree *tree);
 char	**split_cmd_nd_args(char *args);
 char	**multiple_args(char *args);
 char	*expand_var(char *str);
 char	*rm_quotes(char *str);
+char	*variable_name(char *line);
 
 //fix_post
 char	*ft_substr(char *s, unsigned int start, size_t len);
@@ -147,11 +156,16 @@ void	here_doc_execute(t_tree *tree);
 int		ft_execution(t_tree *tree, int ou, int in);
 char	*cmd_path(char *cmd);
 char	*ft_find_path(const char *path);
-void	run_redirect_input(t_tree *tree, int ou, int in);
+void	run_redirect_input(t_tree *tree, int ou);
 void	run_redirect_output(t_tree *tree, int in);
 void	run_here_doc(t_tree *tree, int ou);
 void	run_redirect_output_append(t_tree *tree, int in);
 void	run_and_or(t_tree *tree, int ou, int in);
+char	*ft_optimize_path(char *path, char *command);
+char	*ft_command(char *str);
+int		size_count(char **path);
+void	filr_error(char *name);
+int		execute_builtins(char **args, int ou);
 
 //here_doc_functions
 int		read_from_here_doc(int fd_in, char *limiter);
@@ -160,14 +174,25 @@ char	*var_name(char *line);
 int		ft_get_line(char *line);
 
 //built_ins
-void	pwd_cmd(void);
-void	cd_cmd(char *path);
+void	pwd_cmd(int ou);
+void	cd_cmd(char **args);
 void	env_cmd(void);
-void	echo_cmd(char **args);
+void	echo_cmd(char **args, int ou);
 void	export_cmd(char **args);
 void	unset_cmd(char **args);
+void	exit_cmd(char **args);
+
+//wildcards
+void	ft_lst_file(char *path, t_stack **list, int *index);
+char	**make_lst_file(char *cmd);
+int		check_for_wildcards(char **flags);
+char	**up_flag(char **flags, char *cmd);
 
 //leaks?
 void	free_2d(char **lst);
+void	free_list(t_stack **stack);
+void	tree_free(t_tree *tree, t_tree *branch1, t_tree	*branch2);
+void	free_array(char **array);
+void	sighandler(int sig);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/12 14:58:44 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/04 13:43:11 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/14 09:01:33 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,16 @@
 
 void	sighandler(int sig)
 {
-	if (sig == SIGINT)
+	write(1, "\n", 1);
+	if (sig == SIGINT && g_glob.exc_status == 0)
 	{
-		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 	if (sig == SIGQUIT)
 		return ;
+	g_glob.exc_status = 0;
 }
 
 int	ft_size_count(char **env)
@@ -77,18 +78,22 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	if (!env[0])
+		exit(0);
 	signal(2, sighandler);
 	signal(SIGQUIT, sighandler);
 	envdup(env);
 	while (1)
 	{
-		g_glob.status = 0;
 		input = readline(PROMPT);
 		if (input != NULL && input[0] != '\0')
 			add_history(input);
 		tree = parser(input);
 		if (tree)
+		{
+			g_glob.exc_status = 0;
 			ft_execution(tree, 1, 0);
-		free(input);
+			tree_free(tree, tree->branch1, tree->branch2);
+		}
 	}
 }

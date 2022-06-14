@@ -1,25 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   free_all.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smazouz <smazouz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/23 19:50:37 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/05 18:46:24 by smazouz          ###   ########.fr       */
+/*   Created: 2022/06/06 07:45:26 by smazouz           #+#    #+#             */
+/*   Updated: 2022/06/06 08:12:38 by smazouz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"minishell.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *str)
+void	free_array(char **array)
 {
-	size_t	index;
+	int	index;
 
 	index = 0;
-	if (!str)
-		return (0);
-	while (str[index])
+	while (array[index])
+	{
+		free(array[index]);
 		index++;
-	return (index);
+	}
+	free (array);
+}
+
+void	free_list(t_stack **stack)
+{
+	t_stack	*tmp;
+	t_stack	*head;
+
+	head = (*stack);
+	while (head)
+	{
+		tmp = head;
+		head = head->next;
+		free(tmp);
+	}
+	*stack = NULL;
 }

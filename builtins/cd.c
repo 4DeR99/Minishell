@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 12:39:20 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/03 16:54:31 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/09 08:46:58 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,10 @@ static void	replace_env_var(char *var, char *value)
 	while (env)
 	{
 		if (env->content[0] == var[0] && env->content[1] == var[1]
-			&& env->content[2] == var[2] &&env->content[3] == var[3])
+			&& env->content[2] == var[2] && env->content[3] == var[3])
 			break ;
 		env = env->next;
 	}
-	// free(env->content);
 	env->content = join_2(ft_strdup(var), value);
 }
 
@@ -55,10 +54,12 @@ static void	execute_cd(char *path)
 	}
 }
 
-void	cd_cmd(char *path)
+void	cd_cmd(char **args)
 {
+	char	*path;
 	char	*pwd;
 
+	path = args[1];
 	pwd = getcwd(NULL, 1024);
 	if (!path)
 		cd_no_args();
