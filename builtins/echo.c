@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/22 11:45:16 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/08 20:27:11 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/14 18:29:55 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ void	echo_cmd(char **args, int ou)
 	int	index;
 
 	index = 0;
+	if (!args[1])
+	{
+		ft_putchar_fd('\n', ou);
+		return ;
+	}
 	n = n_flag(args);
 	execute_echo(args, n, ou);
 	if (n != 2)
