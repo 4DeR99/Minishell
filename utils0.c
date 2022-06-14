@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/04 22:27:42 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/08 19:42:44 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/14 18:10:24 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,4 +87,16 @@ int	ft_atoi(const char *s)
 		i++;
 	}
 	return (nbr * n);
+}
+
+void	reset(void)
+{
+	t_env	*env;
+
+	env = g_glob.env;
+	while (env)
+	{
+		env->isprinted = 0;
+		env = env->next;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/12 14:58:57 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/09 08:55:30 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/14 18:09:57 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ int		is_alpha_n(char c);
 void	set_env(void);
 int		ft_atoi(const char *s);
 char	*ft_itoa(int nbr);
+void	reset(void);
 
 //4 parce
 t_tree	*parser(char *input);

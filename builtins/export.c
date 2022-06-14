@@ -6,7 +6,7 @@
 /*   By: moulmado <moulmado@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/02 19:07:23 by moulmado          #+#    #+#             */
-/*   Updated: 2022/06/03 17:44:58 by moulmado         ###   ########.fr       */
+/*   Updated: 2022/06/14 18:10:18 by moulmado         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,4 +115,5 @@ void	export_cmd(char **args)
 	else
 		while (args[index])
 			add_var(args[index++]);
+	reset();
 }
